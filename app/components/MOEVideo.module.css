@@ -1,0 +1,108 @@
+/* Same sticky-pin technique as CloudTransition/PartnershipCTA: .outer's
+   height is the pin's own size (100vh) plus the scroll distance the
+   timeline needs, so .pin sticks for exactly that long with no leftover
+   dead space once it releases. */
+.outer {
+  position: relative;
+  height: 330vh;
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Capped by width AND by the pin's own available height (converted to an
+   equivalent width via the 16:9 ratio) — sizing by width alone let a
+   wide-but-short window push the graphic's height past 100svh, which
+   .pin's overflow:hidden then silently clipped top and bottom off. */
+/* container-type here is what makes the cqw units below possible — every
+   text size/width is proportional to *this box's own* rendered width,
+   not the viewport. That's the fix: previously they used vw, which kept
+   text at full viewport-relative size even after the width cap above
+   shrank the graphic on a wide-but-short window, so text no longer
+   scaled down with its container and overflowed into the title. */
+.graphic {
+  position: relative;
+  width: min(1400px, 92vw, calc(86svh * 16 / 9));
+  aspect-ratio: 1280 / 720;
+  container-type: inline-size;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.title {
+  position: absolute;
+  right: 0;
+  top: 2%;
+  text-align: right;
+  font-family: var(--font-display), serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.005em;
+  text-transform: uppercase;
+}
+
+.titleLine1 {
+  font-size: clamp(1.4rem, 3.6cqw, 2.8rem);
+  color: var(--accent);
+}
+
+.titleLine2 {
+  font-size: clamp(1.4rem, 3.6cqw, 2.8rem);
+  color: #1c3f7c;
+}
+
+.nodeLabel {
+  position: absolute;
+  transform: translate(-50%, 0);
+  font-family: var(--font-display), serif;
+  font-weight: 700;
+  font-size: clamp(0.8rem, 1.5cqw, 1.05rem);
+  white-space: nowrap;
+}
+
+.textBlock {
+  position: absolute;
+  width: clamp(200px, 26cqw, 380px);
+}
+
+.heading {
+  font-family: var(--font-display), serif;
+  font-weight: 800;
+  font-size: clamp(0.9rem, 1.6cqw, 1.25rem);
+  line-height: 1.18;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+
+.desc {
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(0.62rem, 0.82cqw, 0.76rem);
+  line-height: 1.55;
+  color: var(--fg-dim);
+  margin-top: 8px;
+}
+
+.desc strong {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+@media (max-width: 720px) {
+  .textBlock {
+    width: clamp(160px, 42cqw, 260px);
+  }
+}

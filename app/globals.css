@@ -1,0 +1,176 @@
+:root {
+  --bg: #0a0a09;
+  --bg-soft: #111110;
+  --fg: #f4f1ea;
+  --fg-dim: rgba(244, 241, 234, 0.62);
+  --fg-faint: rgba(244, 241, 234, 0.32);
+  --line: rgba(244, 241, 234, 0.14);
+  --accent: #c5192d;
+  --gold: #cba135;
+  --vh: 1vh;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--bg);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  /* No overflow-x here on purpose. Setting only one axis forces the
+     browser to compute the OTHER axis as auto instead of visible (per
+     the CSS overflow spec's interdependence rule) — meaning body has
+     effectively had overflow-y:auto this whole time. Any non-visible
+     overflow on an ancestor breaks position:sticky for everything
+     nested inside it, which is exactly what's been undermining both
+     Mission's sticky background and CloudTransition's sticky pin
+     replacement. Individual sections that need to clip a bleeding
+     decorative element (glows, etc.) already have their own local
+     overflow:hidden, so this was never actually needed at the body
+     level — it was just quietly breaking sticky sitewide instead. */
+}
+
+img,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--fg);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display), serif;
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Shared layout utilities */
+.container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 72px);
+}
+
+.section {
+  position: relative;
+  padding: clamp(96px, 14vw, 180px) 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body), sans-serif;
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.eyebrow::before {
+  content: '';
+  width: 26px;
+  height: 1px;
+  background: var(--accent);
+}
+
+.hr {
+  height: 1px;
+  width: 100%;
+  background: var(--line);
+  border: none;
+}
+
+/* Word-reveal animation targets (set up by GSAP) */
+.reveal-word {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.reveal-line {
+  overflow: hidden;
+  display: block;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 30px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease;
+}
+
+.btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+.btn-solid {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--fg);
+}
+
+.btn-solid:hover {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding: 88px 0;
+  }
+}

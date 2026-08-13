@@ -1,0 +1,91 @@
+.section {
+  position: relative;
+  padding: clamp(120px, 18vw, 260px) 0 clamp(48px, 6vw, 72px);
+  background: #000;
+  overflow: hidden;
+}
+
+/* Same red tint as Partnership's glow (not just a neutral brightness
+   match), so the accent color itself continues across the boundary
+   instead of stopping dead at the section edge. */
+.section::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: clamp(260px, 32vw, 520px);
+  background: linear-gradient(
+    to bottom,
+    rgba(197, 25, 45, 0.1),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Continues Partnership's off-center glow blob across the seam — without
+   this, that section has a large visible light source near the boundary
+   and CTA has none, so the light level cliffs at the edge regardless of
+   the thin gradient strips above. Negative top pulls it up so its center
+   sits right at the boundary, same as where Partnership's leaves off. */
+.glow {
+  position: absolute;
+  top: -22%;
+  right: -10%;
+  width: min(900px, 70vw);
+  aspect-ratio: 1;
+  background: radial-gradient(
+    circle,
+    rgba(197, 25, 45, 0.16) 0%,
+    rgba(197, 25, 45, 0.05) 45%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.headline {
+  font-size: clamp(2.6rem, 8vw, 6.5rem);
+  line-height: 1.25;
+  max-width: 16ch;
+  color: var(--fg);
+}
+
+.actions {
+  margin-top: clamp(36px, 5vw, 56px);
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Doubled-up class in the selector just to out-specificity the global
+   .btn-solid:hover rule, so this button gets its own hover color instead
+   of the site-wide white/black swap. */
+.registerBtn.registerBtn {
+  transition:
+    background 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s ease;
+}
+
+.registerBtn.registerBtn:hover {
+  background: #2f6fed;
+  border-color: #2f6fed;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.footer {
+  margin-top: clamp(96px, 12vw, 160px);
+  padding-top: 28px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footerLeft {
+  font-size: 0.8rem;
+  color: var(--fg-faint);
+  letter-spacing: 0.04em;
+}

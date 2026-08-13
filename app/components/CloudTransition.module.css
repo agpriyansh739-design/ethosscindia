@@ -1,0 +1,303 @@
+/* .outer's height = 100vh (the sticky element's own size) + 450vh (the
+   scroll duration the timeline needs — grew from 330vh when the About /
+   Hindi wordmark / paragraph reading beat was added, so the new content
+   gets roughly the same vh-per-second pace as everything else here). A
+   sticky child genuinely sticks for exactly (parent height - its own
+   height) and then releases with zero leftover space — no separate
+   spacer math, unlike pin:true. No overflow:hidden here — that's the
+   classic way to silently break position:sticky on a descendant. */
+.outer {
+  position: relative;
+  height: 550vh;
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* No will-change here on purpose. It tells the browser "cache this
+   layer as a bitmap and just stretch that texture on future frames
+   instead of repainting" — fine at the old max scale (6.5x), but once
+   the zoom pushes to 140x that cached texture gets blown up ~20x past
+   the resolution it was captured at, which is exactly the blur that
+   showed up (and inconsistently, since whether the browser decides to
+   recapture the texture vs. reuse the stale one is a GPU heuristic, not
+   deterministic — matching it working once and not after a reload).
+   Without this hint the browser repaints the SVG at each frame's actual
+   effective resolution, so it stays crisp at any scale. */
+.imgBox {
+  position: relative;
+  width: min(1500px, 82vw);
+  aspect-ratio: 16 / 9;
+  transform-origin: 50% 49.76%;
+}
+
+.raster {
+  position: absolute;
+  inset: 0;
+}
+
+.raster img {
+  object-fit: contain;
+}
+
+/* Sits over the open gap between the two fort halves in the new photo
+   (crop centered at 50%, 49.76% of the frame, 2.37% x 5.84% of it) —
+   visible from the first frame, since it's vector the whole time and
+   never needs a raster stand-in to crossfade from. */
+.xMark {
+  position: absolute;
+  left: 50%;
+  top: 49.76%;
+  width: 2.37%;
+  height: 5.84%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+/* Covers the whole pin, full-bleed — same as .panel and .rise, opting
+   out of .pin's flex layout (which only centers direct non-absolute
+   children, i.e. imgBox) so this overlays it at the same spot instead of
+   being laid out beside it. */
+.frameBox {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+/* Deliberately NOT capped to a fixed 16:9 box — draw() below already
+   fills the canvas edge-to-edge itself (cover-fit: it scales the frame
+   image to fill cw x ch completely and crops whichever axis overflows,
+   there's no letterbox math to line up with). Capping this to a fixed
+   aspect ratio only introduced pillarboxing that wasn't there before.
+   Text percentages below are relative to this same full-bleed box, so
+   they track the cover-fitted image closely on any ordinary window
+   shape, same tradeoff every other full-bleed image on this site makes. */
+.frameInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  container-type: inline-size;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.aboutText {
+  position: absolute;
+  left: 29%;
+  top: 10%;
+  font-family: var(--font-anton), sans-serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 5.2cqw, 4.1rem);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: #17160f;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.ethosText {
+  position: absolute;
+  left: 48%;
+  top: 17%;
+  font-family: var(--font-devanagari-script), serif;
+  font-size: clamp(2.2rem, 5.6cqw, 4.4rem);
+  color: #1e5636;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.paraText {
+  position: absolute;
+  left: 27%;
+  top: 38%;
+  width: 44%;
+  font-family: var(--font-body), sans-serif;
+  font-size: clamp(0.68rem, 1.15cqw, 0.92rem);
+  line-height: 1.7;
+  color: #3a382f;
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (max-width: 720px) {
+  .aboutText,
+  .ethosText {
+    position: absolute;
+  }
+
+  .aboutText {
+    left: 6%;
+    top: 8%;
+  }
+
+  .ethosText {
+    left: 6%;
+    top: 15%;
+  }
+
+  .paraText {
+    left: 6%;
+    top: 26%;
+    width: 88%;
+  }
+}
+
+/* Date-reveal panel — drops from above to cover the still-visible frame
+   sequence, then hosts the month/day wheel scrub. Sits above the canvas. */
+.panel {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+/* Dimmed via opacity (not a separate scrim) so it blends into the black
+   panel background rather than sitting on top of it — keeps the
+   wheel/label text readable against the busy pattern. */
+.panelBg {
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.16;
+}
+
+.panelContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(12px, 2vw, 24px);
+}
+
+/* Rises up from below to cover the still-static "Save the Date" panel,
+   showing the same background image Mission opens on (no duplicated
+   heading text this time — that's what caused the "double text" bug).
+   The earlier attempt at this also looked broken because body's
+   overflow-x was silently breaking position:sticky (now fixed at the
+   root in globals.css), making Mission's copy of this image behave
+   inconsistently right after this one. With that actually fixed, this
+   scrolling-away frame blending into Mission's sticky one should read
+   as continuous instead of two things behaving differently. */
+.rise {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  background: #000;
+}
+
+.riseImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+.riseScrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+}
+
+.eyebrow {
+  display: inline-block;
+}
+
+.eyebrowFloat {
+  display: inline-block;
+  font-family: var(--font-script), cursive;
+  font-size: clamp(2rem, 4.6vw, 3.4rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--fg);
+  will-change: transform;
+}
+
+.wheels {
+  display: flex;
+  gap: clamp(24px, 6vw, 72px);
+}
+
+.viewport {
+  position: relative;
+  height: calc(var(--row-h) * 5);
+  width: clamp(140px, 22vw, 260px);
+  overflow: hidden;
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.5) 20%,
+    #000 42%,
+    #000 58%,
+    rgba(0, 0, 0, 0.5) 80%,
+    transparent 100%
+  );
+  --row-h: clamp(2.2rem, 5.2vw, 3.6rem);
+}
+
+.list {
+  will-change: transform;
+}
+
+.row {
+  height: var(--row-h);
+  line-height: var(--row-h);
+  font-family: var(--font-display), serif;
+  font-size: calc(var(--row-h) * 0.62);
+  font-weight: 400;
+  text-align: center;
+  color: var(--fg-faint);
+  white-space: nowrap;
+}
+
+.highlightClip {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(calc(50% - var(--row-h) / 2) 0 calc(50% - var(--row-h) / 2) 0);
+  pointer-events: none;
+}
+
+.listHighlight {
+  will-change: transform;
+}
+
+.listHighlight .row {
+  color: var(--fg);
+  font-weight: 600;
+}
+
+.highlightClip::before,
+.highlightClip::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.highlightClip::before {
+  top: calc(50% - var(--row-h) / 2);
+}
+
+.highlightClip::after {
+  bottom: calc(50% - var(--row-h) / 2);
+}
