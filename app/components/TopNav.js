@@ -21,7 +21,15 @@ function buildItems(current) {
     items.push({ label: "Fort Biosphere", href: "/fort-biosphere" });
     items.push({ label: "Secretariat", href: "/secretariat" });
   } else {
-    items.push({ label: "Ethos’26", href: "/", brand: true });
+    // In the bar this is the wordmark; in the mobile menu it is a plain
+    // list item among others, where "Home" says what it does far more
+    // clearly than the wordmark does.
+    items.push({
+      label: "Ethos’26",
+      sheetLabel: "Home",
+      href: "/",
+      brand: true,
+    });
     items.push(
       current === "fort-biosphere"
         ? { label: "Secretariat", href: "/secretariat" }
@@ -33,7 +41,9 @@ function buildItems(current) {
   return items;
 }
 
-function NavLink({ item, className, onClick }) {
+function NavLink({ item, className, onClick, inSheet = false }) {
+  const label = inSheet && item.sheetLabel ? item.sheetLabel : item.label;
+
   if (item.external) {
     return (
       <a
@@ -43,20 +53,20 @@ function NavLink({ item, className, onClick }) {
         className={className}
         onClick={onClick}
       >
-        {item.label}
+        {label}
       </a>
     );
   }
   if (item.href === "#") {
     return (
       <a href="#" className={className} onClick={onClick}>
-        {item.label}
+        {label}
       </a>
     );
   }
   return (
     <Link href={item.href} className={className} onClick={onClick}>
-      {item.label}
+      {label}
     </Link>
   );
 }
@@ -95,14 +105,27 @@ export default function TopNav({ current = "home" }) {
 
       {open && (
         <div className={styles.sheet}>
-          {items.map((item) => (
-            <NavLink
-              key={item.label}
-              item={item}
-              className={styles.sheetLink}
-              onClick={() => setOpen(false)}
-            />
-          ))}
+          {/* The sheet sits above the nav bar, so the bar's own toggle is
+              covered while the menu is open — this is the way back out. */}
+          <button
+            type="button"
+            className={styles.sheetBack}
+            onClick={() => setOpen(false)}
+          >
+            <span aria-hidden="true">&larr;</span> Back
+          </button>
+
+          <div className={styles.sheetLinks}>
+            {items.map((item) => (
+              <NavLink
+                key={item.label}
+                item={item}
+                inSheet
+                className={styles.sheetLink}
+                onClick={() => setOpen(false)}
+              />
+            ))}
+          </div>
         </div>
       )}
     </>

@@ -90,13 +90,42 @@ export default function MOEVideo() {
   const textRefs = useRef([]);
 
   useEffect(() => {
-    // On phones this section is not pinned (see the media query in the
-    // stylesheet) — the diagram sits above the phase text rather than
-    // the text floating over it. The timeline below assumes the pinned
-    // layout and starts everything at autoAlpha:0, so running it there
-    // would just leave the content invisible. Bail out instead and let
-    // it render as plain, readable markup.
-    if (window.matchMedia("(max-width: 860px)").matches) return;
+    // Phones render the vertical roadmap instead of the pinned chart, so
+    // they get their own choreography: per milestone, the dot pops in,
+    // its text follows, then the dashed trail draws downward into the
+    // next one. Driven by each item's own trigger rather than one pinned
+    // scrub, so the section scrolls normally.
+    if (window.matchMedia("(max-width: 860px)").matches) {
+      const mctx = gsap.context(() => {
+        gsap.utils.toArray("[data-v-item]").forEach((item) => {
+          const tl = gsap.timeline({
+            scrollTrigger: { trigger: item, start: "top 80%" },
+          });
+          tl.fromTo(
+            item.querySelector("[data-v-dot]"),
+            { scale: 0, autoAlpha: 0 },
+            { scale: 1, autoAlpha: 1, duration: 0.45, ease: "back.out(2)" }
+          )
+            .fromTo(
+              item.querySelector("[data-v-body]"),
+              { autoAlpha: 0, y: 14 },
+              { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              "-=0.2"
+            );
+
+          const line = item.querySelector("[data-v-line]");
+          if (line) {
+            tl.fromTo(
+              line,
+              { scaleY: 0 },
+              { scaleY: 1, duration: 0.55, ease: "power1.inOut" },
+              "-=0.25"
+            );
+          }
+        });
+      }, outerRef);
+      return () => mctx.revert();
+    }
 
     const ctx = gsap.context(() => {
       gsap.set(nodeRefs.current, {
@@ -265,6 +294,44 @@ export default function MOEVideo() {
             </div>
           ))}
         </div>
+
+        {/* Phones get the same roadmap turned on its side. A wide
+            left-to-right chart cannot be read at 375px, but the sequence
+            it describes is the actual content — so here each milestone
+            is a dot with its year and phase text, and the dashed trail
+            runs downward between them, revealing in the same order as
+            the desktop timeline. Rendered as separate markup rather than
+            reflowed CSS because the desktop version is an SVG whose
+            geometry is inherently horizontal. */}
+        <ol className={styles.vertical}>
+          {NODES.map((n, i) => {
+            const block = TEXT_BLOCKS[i];
+            const isLast = i === NODES.length - 1;
+            return (
+              <li key={n.label} className={styles.vItem} data-v-item>
+                <div className={styles.vRail}>
+                  <span
+                    className={styles.vDot}
+                    style={{ background: n.color }}
+                    data-v-dot
+                  />
+                  {!isLast && <span className={styles.vLine} data-v-line />}
+                </div>
+                <div className={styles.vBody} data-v-body>
+                  <span className={styles.vYear} style={{ color: n.color }}>
+                    {n.label}
+                  </span>
+                  {block && (
+                    <>
+                      <h3 className={styles.heading}>{block.heading}</h3>
+                      {block.body}
+                    </>
+                  )}
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </section>
   );

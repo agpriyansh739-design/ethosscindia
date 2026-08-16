@@ -108,15 +108,69 @@
   font-weight: 600;
 }
 
-/* Phones get a completely different layout for this section rather than
-   a shrunken copy of the desktop one. Four dense text blocks floating
-   over a ~345px-wide diagram is unreadable at any font size, and the
-   blocks positioned by percentage ran straight off the graphic's right
-   edge. So: unpin the section, let it grow to its natural height, keep
-   the chart as an aspect-locked diagram at the top, and stack the phase
-   text underneath it as ordinary flowing content. MOEVideo.js skips its
-   GSAP timeline at this same breakpoint, since that timeline assumes
-   the pinned layout. */
+/* The vertical roadmap is mobile-only; desktop keeps the wide chart. */
+.vertical {
+  display: none;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(14px, 4vw, 20px);
+}
+
+/* The dot and the trail beneath it share this column, so the dashed line
+   always starts under its own milestone and stretches to the next. */
+.vRail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vDot {
+  width: clamp(18px, 5.4vw, 24px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.vLine {
+  flex: 1;
+  width: 3px;
+  min-height: 26px;
+  margin: 8px 0;
+  transform-origin: top center;
+  /* Dashes drawn with a repeating gradient rather than a border, so the
+     rhythm matches the desktop chart's stroke-dasharray. */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--accent) 0 9px,
+    transparent 9px 20px
+  );
+}
+
+.vBody {
+  padding-bottom: clamp(28px, 8vw, 44px);
+}
+
+.vYear {
+  display: block;
+  margin-bottom: 6px;
+  font-family: var(--font-display), serif;
+  font-weight: 800;
+  font-size: clamp(1.15rem, 5.6vw, 1.6rem);
+  line-height: 1;
+}
+
+/* Phones get a genuinely different layout for this section rather than a
+   shrunken copy of the desktop one: four dense text blocks floating over
+   a ~345px-wide chart is unreadable at any font size, and blocks placed
+   by percentage ran off its right edge. The wide chart is dropped
+   entirely here in favour of the vertical timeline above, and the
+   section is unpinned so it scrolls as ordinary content. */
 @media (max-width: 860px) {
   .outer {
     height: auto;
@@ -135,34 +189,26 @@
     aspect-ratio: auto;
   }
 
+  /* The horizontal chart and its floating text have no readable form at
+     this width; the vertical list carries the same content. */
+  .diagram,
+  .textBlock {
+    display: none;
+  }
+
+  .vertical {
+    display: block;
+  }
+
   .title {
     position: static;
     text-align: left;
-    margin-bottom: clamp(20px, 5vw, 32px);
+    margin-bottom: clamp(24px, 7vw, 40px);
   }
 
   .titleLine1,
   .titleLine2 {
     font-size: clamp(1.5rem, 8vw, 2.4rem);
-  }
-
-  .diagram {
-    position: relative;
-    inset: auto;
-    width: 100%;
-    aspect-ratio: 1280 / 720;
-    margin-bottom: clamp(28px, 7vw, 44px);
-  }
-
-  .nodeLabel {
-    font-size: clamp(0.6rem, 3vw, 0.8rem);
-  }
-
-  .textBlock {
-    position: static;
-    width: 100%;
-    max-width: none;
-    margin-bottom: clamp(24px, 6vw, 36px);
   }
 
   .heading {

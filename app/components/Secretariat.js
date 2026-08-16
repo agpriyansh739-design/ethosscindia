@@ -171,23 +171,33 @@ export default function Secretariat() {
   useEffect(() => {
     const cleanups = [];
 
+    // On phones the banner is sized to the photograph's own aspect ratio
+    // so the whole group is visible (see the stylesheet). Parallax needs
+    // to scale the image up to have room to drift, which would crop it
+    // again — so it only runs where the frame is taller than the photo.
+    const wideEnoughForParallax = !window.matchMedia(
+      "(max-width: 860px)"
+    ).matches;
+
     const ctx = gsap.context(() => {
-      // Group photo drifts slower than the page — the usual parallax
-      // depth cue, scaled up first so the drift never exposes an edge.
-      gsap.fromTo(
-        bannerImgRef.current,
-        { yPercent: -12, scale: 1.22 },
-        {
-          yPercent: 12,
-          ease: "none",
-          scrollTrigger: {
-            trigger: bannerImgRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        }
-      );
+      if (wideEnoughForParallax) {
+        // Group photo drifts slower than the page — the usual parallax
+        // depth cue, scaled up first so the drift never exposes an edge.
+        gsap.fromTo(
+          bannerImgRef.current,
+          { yPercent: -12, scale: 1.22 },
+          {
+            yPercent: 12,
+            ease: "none",
+            scrollTrigger: {
+              trigger: bannerImgRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          }
+        );
+      }
 
       gsap.fromTo(
         bannerWordRef.current,
