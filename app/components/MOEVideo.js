@@ -90,6 +90,14 @@ export default function MOEVideo() {
   const textRefs = useRef([]);
 
   useEffect(() => {
+    // On phones this section is not pinned (see the media query in the
+    // stylesheet) — the diagram sits above the phase text rather than
+    // the text floating over it. The timeline below assumes the pinned
+    // layout and starts everything at autoAlpha:0, so running it there
+    // would just leave the content invisible. Bail out instead and let
+    // it render as plain, readable markup.
+    if (window.matchMedia("(max-width: 860px)").matches) return;
+
     const ctx = gsap.context(() => {
       gsap.set(nodeRefs.current, {
         autoAlpha: 0,
@@ -179,6 +187,11 @@ export default function MOEVideo() {
             <div className={styles.titleLine2}>Beyond 2030</div>
           </div>
 
+          {/* Groups the chart with its year labels. On desktop this just
+              fills .graphic so nothing moves; on mobile it becomes the
+              aspect-locked diagram while the text blocks below it drop
+              out of absolute positioning and stack. */}
+          <div className={styles.diagram}>
           <svg
             className={styles.svg}
             viewBox="0 0 1280 720"
@@ -238,6 +251,7 @@ export default function MOEVideo() {
               {n.label}
             </span>
           ))}
+          </div>
 
           {TEXT_BLOCKS.map((block, i) => (
             <div

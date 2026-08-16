@@ -7,9 +7,15 @@
   height: clamp(56px, 8vw, 88px);
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
   padding: 0 clamp(20px, 5vw, 48px);
   background: transparent;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex: 1;
 }
 
 .nav a {
@@ -39,8 +45,88 @@
   color: #fff;
 }
 
-@media (max-width: 720px) {
-  .nav a {
-    font-size: 0.66rem;
+/* Hidden on desktop; the links row is hidden in its place on mobile. */
+.toggle {
+  display: none;
+  margin-left: auto;
+  width: 44px;
+  height: 44px;
+  padding: 10px;
+  flex-direction: column;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition:
+    transform 0.32s cubic-bezier(0.2, 0.7, 0.2, 1),
+    opacity 0.2s ease;
+}
+
+.barTop {
+  transform: translateY(9px) rotate(45deg);
+}
+
+.barMid {
+  opacity: 0;
+}
+
+.barBot {
+  transform: translateY(-9px) rotate(-45deg);
+}
+
+/* Full-screen menu. position:fixed rather than locking body scroll —
+   setting overflow on <body> would break every position:sticky section
+   on this site (Mission, CloudTransition, PartnershipCTA, Secretariat),
+   which is a bug we have already had to chase down once. */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: clamp(18px, 5vw, 30px);
+  padding: 0 clamp(28px, 9vw, 56px);
+  background: rgba(8, 5, 6, 0.97);
+}
+
+.sheetLink {
+  font-family: var(--font-body), sans-serif;
+  font-weight: 800;
+  font-size: clamp(1.35rem, 7vw, 2rem);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg);
+  text-decoration: none;
+}
+
+/* 860px, not 720px: five uppercase nowrap items plus the wordmark stop
+   fitting comfortably well before phone widths. */
+@media (max-width: 860px) {
+  .links {
+    display: none;
+  }
+
+  .toggle {
+    display: flex;
+  }
+
+  .sheet {
+    display: flex;
+  }
+
+  /* The sheet's own links are sized above; keep the bar's wordmark
+     from being the odd one out if it ever shows at this width. */
+  .nav .brand {
+    font-size: 1.35rem;
   }
 }

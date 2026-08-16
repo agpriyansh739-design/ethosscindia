@@ -151,10 +151,21 @@
     top: 15%;
   }
 
+  /* This sits inside .pin, which is a fixed 100svh with overflow:hidden,
+     so an ~80-word paragraph has nowhere to reflow to — on a short phone
+     it simply gets cut off at the bottom edge with no scroll affordance.
+     Capping the height and letting it scroll within its own box keeps
+     every word reachable; the font floor comes down so it rarely needs
+     to. */
   .paraText {
     left: 6%;
     top: 26%;
     width: 88%;
+    max-height: 62svh;
+    overflow-y: auto;
+    font-size: clamp(0.62rem, 3.1vw, 0.82rem);
+    line-height: 1.6;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

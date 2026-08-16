@@ -36,6 +36,13 @@
   container-type: inline-size;
 }
 
+/* Fills .graphic on desktop, so the chart and its year labels keep the
+   exact positions they always had. */
+.diagram {
+  position: absolute;
+  inset: 0;
+}
+
 .svg {
   position: absolute;
   inset: 0;
@@ -101,8 +108,68 @@
   font-weight: 600;
 }
 
-@media (max-width: 720px) {
+/* Phones get a completely different layout for this section rather than
+   a shrunken copy of the desktop one. Four dense text blocks floating
+   over a ~345px-wide diagram is unreadable at any font size, and the
+   blocks positioned by percentage ran straight off the graphic's right
+   edge. So: unpin the section, let it grow to its natural height, keep
+   the chart as an aspect-locked diagram at the top, and stack the phase
+   text underneath it as ordinary flowing content. MOEVideo.js skips its
+   GSAP timeline at this same breakpoint, since that timeline assumes
+   the pinned layout. */
+@media (max-width: 860px) {
+  .outer {
+    height: auto;
+  }
+
+  .pin {
+    position: static;
+    height: auto;
+    overflow: visible;
+    display: block;
+    padding: clamp(56px, 12vw, 90px) clamp(20px, 5vw, 40px);
+  }
+
+  .graphic {
+    width: 100%;
+    aspect-ratio: auto;
+  }
+
+  .title {
+    position: static;
+    text-align: left;
+    margin-bottom: clamp(20px, 5vw, 32px);
+  }
+
+  .titleLine1,
+  .titleLine2 {
+    font-size: clamp(1.5rem, 8vw, 2.4rem);
+  }
+
+  .diagram {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    aspect-ratio: 1280 / 720;
+    margin-bottom: clamp(28px, 7vw, 44px);
+  }
+
+  .nodeLabel {
+    font-size: clamp(0.6rem, 3vw, 0.8rem);
+  }
+
   .textBlock {
-    width: clamp(160px, 42cqw, 260px);
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-bottom: clamp(24px, 6vw, 36px);
+  }
+
+  .heading {
+    font-size: clamp(1rem, 4.6vw, 1.25rem);
+  }
+
+  .desc {
+    font-size: clamp(0.82rem, 3.6vw, 0.95rem);
   }
 }

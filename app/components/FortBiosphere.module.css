@@ -208,3 +208,27 @@
   letter-spacing: 0.02em;
 }
 
+/* This page had no breakpoints at all. Its single-column, clamp-driven
+   layout mostly survives narrow screens, but two things don't: the
+   title's 4.4rem floor is far too large for a 375px screen in a wide
+   script face, and the body copy's floor lands at ~13.6px, below
+   comfortable reading size on a phone. */
+@media (max-width: 720px) {
+  .title {
+    font-size: clamp(2.6rem, 13vw, 4rem);
+  }
+
+  .prose {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .closing {
+    font-size: clamp(1.15rem, 5.6vw, 1.6rem);
+  }
+
+  .pillarsHeading {
+    font-size: clamp(1.4rem, 6.5vw, 1.9rem);
+  }
+}
+
