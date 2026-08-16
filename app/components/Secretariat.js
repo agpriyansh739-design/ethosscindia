@@ -31,7 +31,7 @@ const ROSTER = [
     img: "/images/secretariat/director-general.jpg",
   },
   {
-    name: "Aron Bhagat",
+    name: "Aryan Bhagat",
     role: "Head of Delegate Affairs",
     img: "/images/secretariat/head-delegate-affairs.jpg",
   },
