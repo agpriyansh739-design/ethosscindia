@@ -58,6 +58,30 @@ const scriptAlt = localFont({
   display: "swap",
 });
 
+// Switzer (Swiss Typefaces, via Fontshare) — free for personal & commercial use.
+const switzer = localFont({
+  src: "./fonts/Switzer-Extrabold.otf",
+  variable: "--font-switzer",
+  weight: "800",
+  display: "swap",
+});
+
+// Personal-use only (RGB Studio/Tempting) — see the author's note bundled
+// with the download. Buy a commercial license before a public launch.
+const tempting = localFont({
+  src: "./fonts/Tempting.otf",
+  variable: "--font-tempting",
+  display: "swap",
+});
+
+// Personal-use only (1001Fonts FFP license) — commercial use needs
+// written permission from the author before a public/commercial launch.
+const shivaraja = localFont({
+  src: "./fonts/Shivaraja.ttf",
+  variable: "--font-shivaraja",
+  display: "swap",
+});
+
 export const metadata = {
   title: "ETHOS — SDG 4 Summit",
   description:
@@ -68,7 +92,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${display.variable} ${body.variable} ${script.variable} ${scriptAlt.variable} ${devanagari.variable} ${anton.variable} ${devanagariScript.variable}`}
+      className={`${display.variable} ${body.variable} ${script.variable} ${scriptAlt.variable} ${devanagari.variable} ${anton.variable} ${devanagariScript.variable} ${switzer.variable} ${tempting.variable} ${shivaraja.variable}`}
     >
       <body>
         <SmoothScroll>{children}</SmoothScroll>

@@ -23,8 +23,20 @@
   white-space: nowrap;
 }
 
-.brand {
-  font-size: clamp(1.4rem, 2.4vw, 2rem) !important;
+/* Distinct from the rest of the nav on purpose — Shivaraja plus the
+   site's red accent, so this reads as a wordmark rather than just a
+   bigger nav link. Selector is ".nav .brand", not just ".brand": a
+   single class loses specificity to ".nav a" above (class+type beats
+   a lone class), so font-family/weight/letter-spacing/text-transform
+   were all silently losing to that rule — only font-size ever visibly
+   changed, because it alone had !important forcing it through. */
+.nav .brand {
+  font-family: var(--font-shivaraja), sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: #fff;
 }
 
 @media (max-width: 720px) {
