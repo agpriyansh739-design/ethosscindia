@@ -83,9 +83,74 @@ const shivaraja = localFont({
 });
 
 export const metadata = {
-  title: "ETHOS — SDG 4 Summit",
+  // Required for Open Graph and Twitter images to resolve to absolute
+  // URLs — without it those tags are emitted as relative paths, which
+  // most social platforms and crawlers refuse to fetch.
+  metadataBase: new URL("https://ethosscindia.com"),
+
+  title: {
+    // Sub-pages set only their own name and inherit the suffix, so every
+    // tab and search result stays branded without repeating it by hand.
+    default: "ETHOS 2026 — SDG 4 Summit | The Scindia School × UNESCO",
+    template: "%s | ETHOS 2026",
+  },
+
+  // Written to survive Google's ~155-character truncation: the who, what
+  // and why land in the first sentence, because everything after it may
+  // be cut. The previous description was a single generic clause, which
+  // is part of why Google substituted body copy from the page instead.
   description:
-    "ETHOS is a summit on SDG 4: Quality Education, organized in collaboration with UNESCO.",
+    "ETHOS 2026 is a global student consultation forum hosted by The Scindia School, Gwalior, with the UNESCO Student & Youth Network. Six Policy Labs. 11–18 year olds shaping the future of education under SDG 4.",
+
+  keywords: [
+    "ETHOS 2026",
+    "ETHOS Scindia",
+    "The Scindia School",
+    "UNESCO",
+    "SDG 4",
+    "Quality Education",
+    "student consultation forum",
+    "Policy Labs",
+    "Gwalior",
+    "youth summit",
+    "Model UN",
+  ],
+
+  applicationName: "ETHOS 2026",
+  authors: [{ name: "The Scindia School" }],
+  creator: "The Scindia School",
+  publisher: "The Scindia School",
+  alternates: { canonical: "/" },
+
+  openGraph: {
+    type: "website",
+    siteName: "ETHOS 2026",
+    url: "https://ethosscindia.com",
+    title: "ETHOS 2026 — SDG 4 Summit | The Scindia School × UNESCO",
+    description:
+      "A global student consultation forum on the future of education. Six Policy Labs, delegates aged 11–18, in collaboration with the UNESCO Student & Youth Network.",
+    locale: "en_IN",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "ETHOS 2026 — SDG 4 Summit",
+    description:
+      "A global student consultation forum on the future of education, hosted by The Scindia School with the UNESCO Student & Youth Network.",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      // Lets Google show a full-size preview image and a longer snippet
+      // rather than defaulting to a clipped one.
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -95,6 +160,50 @@ export default function RootLayout({ children }) {
       className={`${display.variable} ${body.variable} ${script.variable} ${scriptAlt.variable} ${devanagari.variable} ${anton.variable} ${devanagariScript.variable} ${switzer.variable} ${tempting.variable} ${shivaraja.variable}`}
     >
       <body>
+        {/* Structured data. This is how Google associates a name and a
+            logo with the domain rather than treating it as an unknown
+            site — the favicon alone only covers the small icon beside
+            the URL. Kept to facts that are certain: no event dates here,
+            because incorrect structured data is penalised, and the
+            summit's dates are not something to guess at. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://ethosscindia.com/#organization",
+                  name: "ETHOS 2026",
+                  alternateName: "ETHOS — SDG 4 Summit",
+                  url: "https://ethosscindia.com",
+                  logo: "https://ethosscindia.com/icon.png",
+                  parentOrganization: {
+                    "@type": "EducationalOrganization",
+                    name: "The Scindia School",
+                    address: {
+                      "@type": "PostalAddress",
+                      addressLocality: "Gwalior",
+                      addressRegion: "Madhya Pradesh",
+                      addressCountry: "IN",
+                    },
+                  },
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://ethosscindia.com/#website",
+                  url: "https://ethosscindia.com",
+                  name: "ETHOS 2026",
+                  description:
+                    "A global student consultation forum on the future of education under SDG 4, hosted by The Scindia School with the UNESCO Student & Youth Network.",
+                  publisher: { "@id": "https://ethosscindia.com/#organization" },
+                  inLanguage: "en-IN",
+                },
+              ],
+            }),
+          }}
+        />
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

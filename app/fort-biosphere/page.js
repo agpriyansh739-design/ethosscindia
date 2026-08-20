@@ -1,7 +1,7 @@
 import FortBiosphere from "../components/FortBiosphere";
 
 export const metadata = {
-  title: "Fort Biosphere — ETHOS",
+  title: "Fort Biosphere",
   description:
     "Fort Biosphere: a restoration-based ecological system at The Scindia School, Gwalior — rewilding, water conservation, waste transformation, energy conservation, and regenerative farming.",
 };

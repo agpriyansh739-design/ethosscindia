@@ -1,7 +1,7 @@
 import Secretariat from "../components/Secretariat";
 
 export const metadata = {
-  title: "The Secretariat — ETHOS",
+  title: "The Secretariat",
   description: "The Secretariat of ETHOS, The Scindia School's SDG 4 summit.",
 };
 

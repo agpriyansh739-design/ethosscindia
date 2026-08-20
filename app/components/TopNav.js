@@ -8,37 +8,42 @@ const FORM_URL =
   "https://docs.google.com/forms/d/e/1FAIpQLSe0Nq2A9PsPfT5Cl1FRtE40mPdOklA-djsQW9gyqGmDVIMT4A/viewform?usp=publish-editor";
 
 // Built as data rather than inline JSX so the desktop row and the mobile
-// menu render from one source — the two can't drift apart. Ordering is
-// unchanged: on either sub-page the brand/home link takes the middle
-// slot, followed by a link to the OTHER sub-page.
-function buildItems(current) {
-  const items = [
-    { label: "Knowledge Hub", href: "#" },
-    { label: "Policy Labs", href: "#" },
-  ];
+// menu render from one source — the two can't drift apart. In the bar the
+// wordmark is branding; in the mobile menu it reads "Home", where the
+// wordmark alone would be an ambiguous item in a list.
+const BRAND = {
+  key: "home",
+  label: "Ethos’26",
+  sheetLabel: "Home",
+  href: "/",
+  brand: true,
+};
 
+const KNOWLEDGE_HUB = { key: "knowledge-hub", label: "Knowledge Hub", href: "#" };
+const REGISTRATION = {
+  key: "registration",
+  label: "Registration",
+  href: FORM_URL,
+  external: true,
+};
+
+const SUB_PAGES = [
+  { key: "policy-labs", label: "Policy Labs", href: "/policy-labs" },
+  { key: "fort-biosphere", label: "Fort Biosphere", href: "/fort-biosphere" },
+  { key: "secretariat", label: "Secretariat", href: "/secretariat" },
+];
+
+// Always five slots. On a sub-page that page gives up its own entry to
+// the wordmark, which is placed in the MIDDLE slot on every page so the
+// brand sits centred in the bar rather than drifting position depending
+// on which page you happen to be on.
+function buildItems(current) {
   if (current === "home") {
-    items.push({ label: "Fort Biosphere", href: "/fort-biosphere" });
-    items.push({ label: "Secretariat", href: "/secretariat" });
-  } else {
-    // In the bar this is the wordmark; in the mobile menu it is a plain
-    // list item among others, where "Home" says what it does far more
-    // clearly than the wordmark does.
-    items.push({
-      label: "Ethos’26",
-      sheetLabel: "Home",
-      href: "/",
-      brand: true,
-    });
-    items.push(
-      current === "fort-biosphere"
-        ? { label: "Secretariat", href: "/secretariat" }
-        : { label: "Fort Biosphere", href: "/fort-biosphere" }
-    );
+    return [KNOWLEDGE_HUB, ...SUB_PAGES, REGISTRATION];
   }
 
-  items.push({ label: "Registration", href: FORM_URL, external: true });
-  return items;
+  const others = SUB_PAGES.filter((p) => p.key !== current);
+  return [KNOWLEDGE_HUB, others[0], BRAND, others[1], REGISTRATION];
 }
 
 function NavLink({ item, className, onClick, inSheet = false }) {

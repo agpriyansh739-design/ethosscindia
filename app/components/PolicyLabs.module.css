@@ -1,0 +1,381 @@
+/* Shares the Secretariat page's palette — a near-black carrying a maroon
+   cast, with gold as the only accent — so the two sub-pages read as one
+   family rather than two designs. */
+
+.page {
+  position: relative;
+  background: #0d0708;
+}
+
+/* position:fixed, not sticky or parallax — the artwork stays put in the
+   viewport for the entire page while every section scrolls over it. Safe
+   here because nothing above it is transformed (Lenis drives native
+   scroll rather than a transformed wrapper), which would otherwise
+   re-anchor a fixed child to that ancestor. */
+.pageBg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.pageBgImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Settled between the original 0.86 (artwork too buried) and 0.68 (too
+   present): the pattern reads without competing with the type. Legibility
+   no longer rests on this alone — the lab cards carry their own opaque
+   panels — so it only has to keep the hero's display type clean. */
+.pageBgScrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(9, 5, 6, 0.77);
+}
+
+/* Sits between the fixed background and the content. Everything visible
+   here is painted in JS — the stroke shape, its fade, and the tint are
+   all composited on the canvas itself. */
+.brush {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.hero {
+  position: relative;
+  z-index: 2;
+  height: 100svh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-display), serif;
+  font-weight: 700;
+  font-size: clamp(3rem, 11vw, 9rem);
+  line-height: 0.95;
+  letter-spacing: -0.015em;
+  color: #fff8ef;
+}
+
+/* Auto side margins so the measure stays narrow while the block itself
+   sits centred under the title. */
+.lede {
+  margin: clamp(20px, 3vw, 34px) auto 0;
+  max-width: 34ch;
+  font-family: var(--font-display), serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1.1rem, 2.3vw, 1.7rem);
+  line-height: 1.4;
+  color: rgba(248, 245, 239, 0.94);
+}
+
+/* Transparent so the fixed artwork above shows through; z-index lifts it
+   over that layer. */
+.body {
+  position: relative;
+  z-index: 2;
+  padding: clamp(70px, 10vw, 130px) 0 clamp(90px, 13vw, 170px);
+}
+
+.intro {
+  max-width: 60ch;
+  margin-bottom: clamp(64px, 9vw, 110px);
+  font-weight: 500;
+  font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+  line-height: 1.72;
+  color: rgba(247, 244, 238, 0.94);
+}
+
+.section + .section {
+  margin-top: clamp(72px, 10vw, 130px);
+}
+
+.sectionHead {
+  margin-bottom: clamp(32px, 5vw, 54px);
+}
+
+.sectionTitle {
+  font-family: var(--font-display), serif;
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.1;
+  color: #fff8ef;
+}
+
+.sectionAges {
+  display: block;
+  margin-bottom: clamp(10px, 1.6vw, 16px);
+  font-family: var(--font-switzer), sans-serif;
+  font-weight: 800;
+  font-size: 0.76rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* Letterpress-style double rule — a thin line over a thicker one. Reads
+   as heritage printing rather than a generic divider. */
+.doubleRule {
+  display: block;
+  margin: clamp(14px, 2vw, 20px) 0 clamp(14px, 2vw, 18px);
+  height: 4px;
+  border-top: 1px solid rgba(203, 161, 53, 0.75);
+  border-bottom: 3px solid rgba(203, 161, 53, 0.28);
+}
+
+.sectionNote {
+  max-width: 52ch;
+  font-weight: 500;
+  font-size: 1.02rem;
+  line-height: 1.68;
+  color: rgba(244, 241, 234, 0.84);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(18px, 2.6vw, 32px);
+}
+
+/* A solid-enough dark panel rather than the barely-there tint this had
+   before: the background behind it is now lighter, and the cursor reveal
+   can put a busy tiger pattern behind any card at any moment, so the
+   text needs a dependable surface to sit on. */
+.lab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(24px, 3vw, 38px);
+  background: rgba(11, 6, 7, 0.72);
+  border: 1px solid rgba(203, 161, 53, 0.28);
+  transition:
+    border-color 0.45s ease,
+    background 0.45s ease,
+    transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Restrained on purpose — a lift and a warmer frame, no tilt or glow. */
+.lab:hover {
+  border-color: rgba(203, 161, 53, 0.62);
+  background: rgba(11, 6, 7, 0.82);
+  transform: translateY(-4px);
+}
+
+.labTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+
+.labNum {
+  font-family: var(--font-display), serif;
+  font-size: clamp(1.6rem, 2.6vw, 2.2rem);
+  line-height: 1;
+  color: rgba(203, 161, 53, 0.85);
+}
+
+/* Same treatment used for the Secretariat's missing portrait: an
+   explicit marker, so an empty field reads as pending rather than
+   broken. */
+.chip {
+  padding: 6px 12px;
+  border: 1px solid rgba(203, 161, 53, 0.4);
+  font-family: var(--font-switzer), sans-serif;
+  font-weight: 800;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(244, 241, 234, 0.72);
+  white-space: nowrap;
+}
+
+.labName {
+  font-family: var(--font-display), serif;
+  font-weight: 700;
+  font-size: clamp(1.25rem, 2.2vw, 1.7rem);
+  line-height: 1.25;
+  color: #fff8ef;
+}
+
+.labRule {
+  display: block;
+  width: 34px;
+  height: 1px;
+  margin: clamp(14px, 2vw, 20px) 0;
+  background: var(--gold);
+  transform-origin: left center;
+  transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.lab:hover .labRule {
+  transform: scaleX(2.2);
+}
+
+/* The guiding question, set apart from the topic list — italic display
+   type echoes how it is handled on the source slides. */
+.labQuestion {
+  font-family: var(--font-display), serif;
+  font-style: italic;
+  font-weight: 600;
+  font-size: clamp(1rem, 1.6vw, 1.18rem);
+  line-height: 1.5;
+  color: rgba(250, 246, 240, 0.96);
+}
+
+/* margin-bottom:auto pushes the button row below to the card's foot, so
+   the pairs align across cards with different amounts of text. */
+.topics {
+  margin-top: clamp(18px, 2.4vw, 26px);
+  margin-bottom: auto;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.topic {
+  position: relative;
+  padding-left: 18px;
+  font-family: var(--font-body), sans-serif;
+  font-weight: 600;
+  font-size: 0.93rem;
+  line-height: 1.45;
+  color: rgba(244, 241, 234, 0.92);
+}
+
+/* Gold diamond markers rather than discs — closer to the heritage
+   detailing used elsewhere on the site. */
+.topic::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.5em;
+  width: 6px;
+  height: 6px;
+  transform: rotate(45deg);
+  background: var(--gold);
+}
+
+/* Pinned to the foot of the card by .topics' auto margin above, so the
+   pair line up across cards of differing text length. */
+.labActions {
+  margin-top: clamp(22px, 3vw, 30px);
+  padding-top: clamp(18px, 2.4vw, 24px);
+  border-top: 1px solid rgba(203, 161, 53, 0.18);
+  display: flex;
+  justify-content: center;
+}
+
+/* overflow:hidden is what lets the fill sweep in without escaping the
+   pill's rounded edge. cursor:default because this is currently an inert
+   span — a pointer would promise a click that does nothing. */
+.labBtn {
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  user-select: none;
+  padding: 13px 30px;
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  font-family: var(--font-switzer), sans-serif;
+  font-weight: 800;
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  line-height: 1.25;
+  text-transform: uppercase;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Sweep fill + arrow. */
+.labBtnGhost {
+  background: transparent;
+  color: var(--gold);
+}
+
+.labBtnGhost::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.labBtnGhost:hover::before {
+  transform: scaleX(1);
+}
+
+/* Above the sweeping fill, and inverted to stay legible once it lands. */
+.ghostLabel,
+.ghostArrow {
+  position: relative;
+  transition:
+    transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1),
+    color 0.3s ease 0.08s,
+    opacity 0.35s ease;
+}
+
+.ghostArrow {
+  opacity: 0;
+  transform: translateX(-8px);
+}
+
+.labBtnGhost:hover .ghostLabel {
+  transform: translateX(4px);
+  color: #17100a;
+}
+
+.labBtnGhost:hover .ghostArrow {
+  opacity: 1;
+  transform: translateX(0);
+  color: #17100a;
+}
+
+.footnote {
+  margin-top: clamp(24px, 3.4vw, 38px);
+  padding-top: clamp(16px, 2.2vw, 22px);
+  border-top: 1px solid rgba(203, 161, 53, 0.22);
+  max-width: 72ch;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: rgba(244, 241, 234, 0.6);
+}
+
+@media (max-width: 860px) {
+  /* No cursor to follow, so the canvas would only ever be an empty
+     full-viewport layer repainting every frame. */
+  .brush {
+    display: none;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Hover lift is pointer-only; on touch it can stick after a tap. */
+  .lab:hover {
+    transform: none;
+  }
+}
