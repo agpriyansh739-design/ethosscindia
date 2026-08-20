@@ -13,11 +13,12 @@ const FRAME_COUNT = 75;
 const frameSrc = (i) =>
   `/images/explode/frame-${String(i + 1).padStart(3, "0")}.jpg`;
 
-const MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP"];
-const DAYS = ["30", "31", "1"];
+// The summit runs 25–27 September, so the month wheel holds a single
+// value and never scrolls — only the date wheel counts through the three
+// days.
+const MONTHS = ["SEP"];
+const DAYS = ["25", "26", "27"];
 const SPACER = 2; // blank rows padded above/below so the target lands centered
-const AUG_INDEX = MONTHS.indexOf("AUG");
-const SEP_INDEX = MONTHS.indexOf("SEP");
 
 function Wheel({ items, listRef, highlightRef }) {
   const rows = [
@@ -145,23 +146,21 @@ export default function CloudTransition() {
     // needs k = j + SPACER - 2 — and since SPACER is 2 here, that's just
     // k = j. (Adding SPACER again on top of that, as this used to do,
     // double-counts the padding and centers an item 2 rows further along
-    // than intended — that's what was showing MAR/"1" as the resting
-    // state instead of JAN/"30".)
-    const monthRows = SPACER * 2 + MONTHS.length;
-    const monthUnit = 100 / monthRows;
-    const monthStart = 0; // JAN, index 0 — no translation needed
-    const monthAtAug = -(AUG_INDEX * monthUnit);
-    const monthAtSep = -(SEP_INDEX * monthUnit);
+    // than intended.)
+    //
+    // SEP is the month wheel's only entry, so index 0 leaves it centred
+    // with no translation and nothing to animate.
+    const monthStart = 0;
 
     const dayRows = SPACER * 2 + DAYS.length;
     const dayUnit = 100 / dayRows;
-    const dayAt30 = 0; // index 0 — no translation needed
-    const dayAt31 = -(1 * dayUnit); // index 1
-    const dayAt1 = -(2 * dayUnit); // index 2
+    const dayAt25 = 0; // index 0 — no translation needed
+    const dayAt26 = -(1 * dayUnit); // index 1
+    const dayAt27 = -(2 * dayUnit); // index 2
 
     const ctx = gsap.context(() => {
       gsap.set([monthsRef.current, monthsHiRef.current], { yPercent: monthStart });
-      gsap.set([daysRef.current, daysHiRef.current], { yPercent: dayAt30 });
+      gsap.set([daysRef.current, daysHiRef.current], { yPercent: dayAt25 });
 
       // Every phase below is placed at an explicit absolute time (seconds
       // along this timeline), not GSAP's relative "<"/"-=" shorthand.
@@ -188,10 +187,8 @@ export default function CloudTransition() {
         paraIn: 1.75,
         panel: 2.5,
         eyebrow: 2.7,
-        monthsToAug: 2.8,
-        daysTo31: 3.3,
-        daysTo1: 3.5,
-        monthsToSep: 3.5,
+        daysTo26: 2.85,
+        daysTo27: 3.35,
         riseUp: 3.95,
       };
 
@@ -305,32 +302,20 @@ export default function CloudTransition() {
           { autoAlpha: 1, y: 0, duration: 0.15, ease: "power2.out" },
           T.eyebrow
         )
-        // Months scroll JAN through AUG first, on their own — the date
-        // wheel doesn't move at all yet.
-        .to(
-          [monthsRef.current, monthsHiRef.current],
-          { yPercent: monthAtAug, ease: "power2.inOut", duration: 0.5 },
-          T.monthsToAug
-        )
-        // Only once we've landed on AUG does the date wheel start: 30, 31.
+        // The month reads SEP throughout, so only the date wheel moves:
+        // it counts 25 -> 26 -> 27 across the three days of the summit,
+        // resting on the last of them.
         .to(
           [daysRef.current, daysHiRef.current],
-          { yPercent: dayAt31, ease: "power2.inOut", duration: 0.2 },
-          T.daysTo31
+          { yPercent: dayAt26, ease: "power2.inOut", duration: 0.45 },
+          T.daysTo26
         )
-        // The instant the date wheel moves off 31 toward 1, the month
-        // rolls AUG -> SEP in lockstep — they land together.
         .to(
           [daysRef.current, daysHiRef.current],
-          { yPercent: dayAt1, ease: "power2.inOut", duration: 0.25 },
-          T.daysTo1
+          { yPercent: dayAt27, ease: "power2.inOut", duration: 0.45 },
+          T.daysTo27
         )
-        .to(
-          [monthsRef.current, monthsHiRef.current],
-          { yPercent: monthAtSep, ease: "power2.inOut", duration: 0.25 },
-          T.monthsToSep
-        )
-        // Hold on SEP/1 — it stays fully visible and static, "fixed" in
+        // Hold on SEP 27 — it stays fully visible and static, "fixed" in
         // place — while a solid black panel rises up from the bottom
         // edge and covers it, still within this same pin. That panel is
         // the same black Mission opens on, so the handoff reads as
